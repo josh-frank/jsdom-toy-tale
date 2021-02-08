@@ -40,7 +40,21 @@ function createToy(addFormSubmission){
   fetch(toysUrl, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(newlyCreatedToy)})
   .then(response => response.json())
   .then(createdToy => renderToy(createdToy))
+}
 
+function handleToyClick(toyClick){
+  if (toyClick.target.className === "like-btn"){
+    const toyId = parseInt(toyClick.target.closest("div").dataset.id)
+    const currentLikes = parseInt(toyClick.target.previousSibling.textContent.replace(" Likes", ""))
+    const updatedToy = {
+      // name: toyClick.target.closest("div").querySelector("h2").textContent,
+      // image: toyClick.target.closest("div").querySelector("img").src,
+      likes: currentLikes + 1
+    }
+    fetch(`${toysUrl}/${toyId}`, {method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify(updatedToy)})
+    .then(response => response.json())
+    .then(updatedToy => toyClick.target.previousSibling.textContent = `${updatedToy.likes} Likes`)
+  }
 }
 
 
@@ -58,4 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   toyFormContainer.querySelector("form").addEventListener("submit", createToy)
+  listOfToys.addEventListener("click", handleToyClick)
+    
 });
+
